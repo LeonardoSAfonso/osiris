@@ -1,0 +1,51 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    volumes:
+      - .:/app
+    ports:
+      - '3000:3000'
+    networks:
+      panteon:
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_DB: osiris_db
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: docker
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    networks:
+      panteon:
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:19.0.1
+    command: ['start-dev']
+    restart: unless-stopped
+    init: true
+    healthcheck:
+      test: cat /proc/net/tcp | grep '00000000:1F90 00000000:0000' || exit 1
+      interval: 5s
+      timeout: 2s
+      retries: 20
+      start_period: 120s
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    volumes:
+      - ./docker/keycloak-setup.sh:/keycloak-setup.sh
+      - ./docker/osiris-realm.json:/tmp/realm.json
+    ports:
+      - '8080:8080'
+    entrypoint: /keycloak-setup.sh
+    networks:
+      panteon:
+
+networks:
+  panteon:
+    driver: bridge

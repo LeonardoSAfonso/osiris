@@ -1,0 +1,118 @@
+graphql_error_handle: true
+qa_mode: true
+consolidate_queue_delay_time: 4
+
+keycloak:
+  auth_server_url: http://localhost:8081/auth
+  realm: melhor-rastreio
+  client_id: api
+  apiRole: '3rdPartyIntegration'
+  secret: b8b19a66-8d8d-4f93-8388-ca2c2f6b6fa5
+  admin: admin
+  admin_password: melhorrastreio
+  request_timeout: 5000
+
+business_rules:
+  days_to_last_event_expire: 7
+  days_to_parcel_expire: 30
+
+database:
+  uri: 'mongodb://melhorrastreio:melhorrastreio@localhost:27017/melhorrastreio_test?authSource=admin&retryWrites=true&w=majority'
+  allow_global_context: true
+  ensureIndexes: true
+
+bull:
+  redis:
+    host: localhost
+    port: 6379
+    password:
+
+redis:
+  host: localhost
+  port: 6379
+  password:
+
+smtp:
+  host: 'mailpit'
+  port: 1025
+  ssl: false
+  username: ''
+  password: ''
+
+recaptcha:
+  enabled: false
+  secret: 'anything'
+  minimum_score: 0.8
+
+jwt:
+  secret: 'f9bf78b9a18ce6d46a0cd2b0b86df9da'
+
+integrations:
+  melhorenvio:
+    url: 'https://sandbox.melhorenvio.com.br'
+    client_id: 3495
+    client_secret: ELsaDBJ7wSpkUvwKhrJTnj0F3Li4rE56FJcioho6
+    redirect_url: 'https://app.melhorenvio.work/integrations/callback'
+  notifications:
+    arn:
+
+streams:
+  redis:
+    url: 'redis://redis:6379'
+    client_name: 'api'
+  group: api
+  read_timeout: 5000
+  maxLength: 1000
+  reclaim:
+    count: 100
+    interval: 5000
+    max_deliveries: 5
+    throughput_threshold: 5,
+    min_idle_time: 60_000,
+    maxLength: 2000
+
+datadog:
+  trace_config:
+    logInjection: true
+    env: 'development'
+
+toggle:
+  notification_events: true
+
+anonymization:
+  oaepHash: 'sha256'
+  privateKey: ''
+  publicKey: |
+    -----BEGIN PUBLIC KEY-----
+      MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA1yPEVoVofrhBm2BrNkBF
+      i5w1temIz54hrwbWD40SU1DvDipfr0OSLT+m6hIfcuvciqyi+mB0dcMskbmk6R3M
+      1+Ik9wS+N3TZixoGW+/hhFMoYaKVRkibyRgzS7lEmErOkfwI8FeY57xDvkJRlkFj
+      SgzXZmqIsKK3SKksd0Rss5COGSmZ9/jBb7UnMJbm3nZBJVtUcCNUQfvS451/GlmL
+      Wc+zIO/eMI2z2jtHgRkFDx7sr5g3q+4DlU0FyLDKSvRpVIG56wIAy7qvjfhj9vVM
+      LwiC/S671RuD3Av+ChMPTDyOs5rsSXYuSEmjzhRw2o6DQvJ2tddTCVLZypDxnihm
+      ZOtm8B6gUxIvS0UoL5Umj7iVJk3F8PXcHv8etMsJ2Hptph5UOtpU6PJAvLc2nwnz
+      dfjhLSVIl8MU/Hy0lvTwar95FKT6VlxBLkso3dUdDH1HChmGQ9TQuE9h5VwDy4iV
+      gr0GHV3sMy0Ho9LuoeuUeqf8co2yT+faRguVukxOagm98SHrfpy1mGoVcSNoWodd
+      oMsbCmKKjlxG5LUTu1vQ13+FFMb69tvC/GEiEYR/0tMs3HSZNsasm/a0MvlE+Zeo
+      Z0rctGL4c1dabuPW8yhPxrKNIa+68wSAt0hWcpZmYeyeJVfcG4SqY8HqCKNepMot
+      bSu+OQp1JvKDUgz8YyPU04MCAwEAAQ==
+    -----END PUBLIC KEY-----
+
+aws:
+  region: us-east-1
+  accountNumber: 975142182422
+  accessKeyId:
+  secretAccessKey:
+  useContainerMetadataAuth: false
+  sqs:
+    endpoint: https://sqs.us-east-1.amazonaws.com
+  sns:
+    endpoint: https://sns.us-east-1.amazonaws.com
+  ses:
+    from:
+
+queue:
+  email:
+    retryAttempts: 4
+
+default_mail_destination: tecnologia-rastreio@melhorenvio.com

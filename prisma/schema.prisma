@@ -1,0 +1,35 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("database.uri")
+}
+
+model Farm {
+  id             String   @id @default(uuid())
+  name           String
+  email          String   @unique
+  identification String   @unique
+  coordenates    String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  User           User[]
+}
+
+model User {
+  id            String   @id @default(uuid())
+  name          String
+  email         String   @unique
+  first_access  Boolean  @default(true)
+  email_checked Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  farmId        String?
+  Farm          Farm?    @relation(fields: [farmId], references: [id])
+}
