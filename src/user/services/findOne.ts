@@ -1,7 +1,9 @@
 import { User } from 'prisma/client';
 import UserRepository from '../repository';
 import AppError from 'src/shared/AppError';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export default class FindOneUserService {
   constructor(private repository: UserRepository) {
     this.repository = repository;

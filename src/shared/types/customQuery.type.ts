@@ -1,15 +1,13 @@
 import { PaginationParams } from './pagination.type';
 
-export type EntityKeyOrder<T> = { [K in keyof T]?: 'asc' | 'desc' };
-
-export class CustomQuery<T> {
+export class CustomQuery {
   take?: number;
   skip?: number;
   where: Record<string, unknown> = {};
-  orderBy?: EntityKeyOrder<T>;
+  orderBy?: Record<string, 'asc' | 'desc'>;
 
-  static fromPagination(params: PaginationParams<T>): CustomQuery<T> {
-    const query = new CustomQuery<R>();
+  static fromPagination<T>(params: PaginationParams<T>): CustomQuery {
+    const query = new CustomQuery();
 
     if (params.limit !== undefined) query.limit(params.limit);
     if (params.offset !== undefined) query.offset(params.offset);
@@ -42,7 +40,18 @@ export class CustomQuery<T> {
     return this;
   }
 
-  order(orderBy: EntityKeyOrder<T>): this {
+  withCondition(condition: Record<string, unknown>): this {
+    if (Object.keys(this.where).length === 0) {
+      this.where = condition;
+    } else {
+      this.where = {
+        AND: [this.where, condition],
+      };
+    }
+    return this;
+  }
+
+  order(orderBy: Record<string, 'asc' | 'desc'>): this {
     this.orderBy = orderBy;
     return this;
   }

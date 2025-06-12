@@ -1,47 +1,33 @@
-import { PrismaService } from 'src/orm/prisma.provider';
+import { PrismaService } from 'src/orm/prisma.service';
 import { User } from 'prisma/client';
 import { CreateDTO, UpdateDTO } from 'src/shared/types/model.type';
 import { PaginationParams } from 'src/shared/types/pagination.type';
+import { CustomQuery } from 'src/shared/types/customQuery.type';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export default class UserRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
   public async create(data: CreateDTO<User>): Promise<User> {
-    await this.createAdmin();
-    const user = await this.prismaService.user.create({ data });
-
-    await this.prismaService.$disconnect();
-    return user;
+    return this.prismaService.user.create({ data });
   }
 
   public async find(
     params: PaginationParams<User>,
     farmId: string,
   ): Promise<[User[], number]> {
+    const query = CustomQuery.fromPagination(params).withCondition({ farmId });
+
     const elements = await this.prismaService.user.count({
-      ...params.getCount().withCondition({ farmId }),
+      ...query,
     });
 
     const users = await this.prismaService.user.findMany({
-      ...params.getQuery().withCondition({ farmId }),
+      ...query,
     });
 
-    await this.prismaService.$disconnect();
     return [users, elements];
-  }
-
-  public async createAdmin(): Promise<void> {
-    await this.prismaService.user.upsert({
-      where: { email: process.env.ADMIN_EMAIL },
-      create: {
-        email: process.env.ADMIN_EMAIL || 'admin',
-        name: 'admin',
-        password: process.env.ADMIN_PASSWORD,
-      },
-      update: {},
-    });
-
-    await this.prismaService.$disconnect();
   }
 
   public async findById(id: string): Promise<User | null> {
@@ -49,7 +35,6 @@ export default class UserRepository {
       where: { id },
     });
 
-    await this.prismaService.$disconnect();
     return user;
   }
 
@@ -61,7 +46,6 @@ export default class UserRepository {
       where: { email, farmId },
     });
 
-    await this.prismaService.$disconnect();
     return user;
   }
 
@@ -71,7 +55,6 @@ export default class UserRepository {
       data,
     });
 
-    await this.prismaService.$disconnect();
     return updatedUser;
   }
 

@@ -2,7 +2,9 @@ import AppError from 'src/shared/AppError';
 import { CreateDTO } from 'src/shared/types/model.type';
 import UserRepository from '../repository';
 import { User } from 'prisma/client';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export default class CreateUserService {
   constructor(private repository: UserRepository) {}
 

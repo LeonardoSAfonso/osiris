@@ -3,7 +3,7 @@ import { UserQuery } from '@keycloak/keycloak-admin-client/lib/resources/users';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserNotFoundError } from './errors/user-not-found.error';
-import { User } from 'prisma/client';
+import { CreateUserDTO } from './dtos/createUser';
 
 @Injectable()
 export class KeycloakUserService {
@@ -12,8 +12,8 @@ export class KeycloakUserService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async create(user: User, password: string): Promise<User> {
-    await this.admin.users
+  async create(user: CreateUserDTO): Promise<{ id: string }> {
+    const kcUser = await this.admin.users
       .create({
         username: user.name,
         email: user.email,
@@ -22,17 +22,18 @@ export class KeycloakUserService {
           {
             temporary: false,
             type: 'password',
-            value: password,
+            value: user.password,
           },
         ],
         attributes: {
-          dbId: user.id,
+          dbId: user.dbId,
         },
       })
       .catch((e) => {
         throw new Error(JSON.stringify(e));
       });
-    return user;
+
+    return kcUser;
   }
 
   async removeByEmail(email: string): Promise<void> {

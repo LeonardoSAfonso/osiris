@@ -4,8 +4,8 @@ import { ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import {
-  AuthGuard,
   KeycloakConnectModule,
+  AuthGuard,
   ResourceGuard,
   RoleGuard,
 } from 'nest-keycloak-connect';
@@ -24,17 +24,17 @@ export class KeycloakModule {
       imports: [
         KeycloakConnectModule.registerAsync({
           useFactory: (config: ConfigService) => ({
-            authServerUrl: config.get<string>('keycloak.auth_server_url'),
-            realm: config.get<string>('keycloak.realm'),
-            clientId: config.get<string>('keycloak.client_id'),
-            secret: config.get<string>('keycloak.secret'),
+            authServerUrl: config.get<string>('KC_AUTH_SERVER_URL'),
+            realm: config.get<string>('KC_REALM'),
+            clientId: config.get<string>('KC_CLIENT_ID'),
+            secret: config.get<string>('KC_SECRET'),
             useNestLogger: false,
           }),
           inject: [ConfigService],
         }),
         JwtModule.registerAsync({
           useFactory: (config: ConfigService) => ({
-            secret: config.get<string>('jwt.secret'),
+            secret: config.get<string>('JWT_SECRET'),
           }),
           inject: [ConfigService],
         }),

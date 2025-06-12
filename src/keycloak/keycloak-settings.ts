@@ -12,12 +12,12 @@ export class KeycloakSettings {
   public requestTimeout: number;
 
   constructor(config: ConfigService) {
-    this.url = config.get<string>('keycloak.auth_server_url');
-    this.realm = config.get<string>('keycloak.realm');
-    this.adminUser = config.get<string>('keycloak.admin');
-    this.adminPassword = config.get<string>('keycloak.admin_password');
-    this.clientID = config.get<string>('keycloak.client_id');
-    this.clientSecret = config.get<string>('keycloak.secret');
-    this.requestTimeout = config.get<number>('keycloak.request_timeout');
+    this.url = config.get<string>('KC_AUTH_SERVER_URL');
+    this.realm = config.get<string>('KC_REALM');
+    this.adminUser = config.get<string>('KC_ADMIN');
+    this.adminPassword = config.get<string>('KC_ADMIN_PASSWORD');
+    this.clientID = config.get<string>('KC_CLIENT_ID');
+    this.clientSecret = config.get<string>('KC_SECRET');
+    this.requestTimeout = config.get<number>('KC_REQUEST_TIMEOUT');
   }
 }

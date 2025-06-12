@@ -1,4 +1,4 @@
-import { IsOptional, IsIn, IsInt, Min } from 'class-validator';
+import { IsOptional, IsIn, IsInt, Min, IsString } from 'class-validator';
 
 export class PaginationParams<T> {
   @IsOptional()
@@ -16,9 +16,15 @@ export class PaginationParams<T> {
   order: 'asc' | 'desc' = 'asc';
 
   @IsOptional()
-  @IsIn(['asc', 'desc'])
+  @IsString()
   orderBy?: keyof T;
+
+  @IsOptional()
+  @IsString()
   searchBy?: keyof T;
+
+  @IsOptional()
+  @IsString()
   searchFor?: string;
 
   constructor(params: Partial<PaginationParams<T>>) {
