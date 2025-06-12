@@ -2,10 +2,12 @@ services:
   api:
     build:
       context: .
+      target: dev
       dockerfile: Dockerfile
     restart: unless-stopped
     volumes:
       - .:/app
+      - /app/node_modules
     ports:
       - '3000:3000'
     networks:
@@ -18,14 +20,21 @@ services:
       POSTGRES_DB: osiris_db
       POSTGRES_USER: root
       POSTGRES_PASSWORD: docker
+      PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - ./data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
     networks:
       panteon:
 
   keycloak:
     image: quay.io/keycloak/keycloak:19.0.1
-    command: ['start-dev']
+    command:
+      - start-dev
+      - --import-realm
+      - --http-relative-path
+      - /auth
     restart: unless-stopped
     init: true
     healthcheck:
@@ -38,14 +47,13 @@ services:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
     volumes:
-      - ./docker/keycloak-setup.sh:/keycloak-setup.sh
-      - ./docker/osiris-realm.json:/tmp/realm.json
+      - ./docker/osiris-realm.json:/opt/keycloak/data/import/realm.json:ro
     ports:
-      - '8080:8080'
-    entrypoint: /keycloak-setup.sh
+      - '8088:8080'
     networks:
       panteon:
 
 networks:
   panteon:
     driver: bridge
+    name: panteon

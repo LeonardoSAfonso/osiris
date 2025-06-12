@@ -1,5 +1,5 @@
 {
-  "id": "osiris",
+  "id": "api",
   "realm": "osiris",
   "notBefore": 1647458722,
   "defaultSignatureAlgorithm": "RS256",
@@ -447,7 +447,7 @@
   "requiredCredentials": [
     "password"
   ],
-  "passwordPolicy": "length(12) and maxLength(64) and regexPattern((?i)(?=^(?!.*(.)\\1\\1).*$)(^(?!.*((ABC)|(BCD)|(CDE)|(DEF)|(EFG)|(FGH)|(GHI)|(HIJ)|(IJK)|(JKL)|(KLM)|(LMN)|(MNO)|(NOP)|(OPQ)|(PQR)|(QRS)|(RST)|(STU)|(TUV)|(UVW)|(VWX)|(WXY)|(XYZ)|(012)|(123)|(234)|(345)|(456)|(567)|(678)|(789))).*$))",
+  "passwordPolicy": "length(5) and maxLength(64) and regexPattern((?i)(?=^(?!.*(.)\\1\\1).*$)(^(?!.*((ABC)|(BCD)|(CDE)|(DEF)|(EFG)|(FGH)|(GHI)|(HIJ)|(IJK)|(JKL)|(KLM)|(LMN)|(MNO)|(NOP)|(OPQ)|(PQR)|(QRS)|(RST)|(STU)|(TUV)|(UVW)|(VWX)|(WXY)|(XYZ)|(012)|(123)|(234)|(345)|(456)|(567)|(678)|(789))).*$))",
   "otpPolicyType": "totp",
   "otpPolicyAlgorithm": "HmacSHA1",
   "otpPolicyInitialCounter": 0,
@@ -523,7 +523,7 @@
     {
       "id": "719d7762-b989-409f-9da2-8ab2488bf996",
       "createdTimestamp": 1631100187432,
-      "username": "admin",
+      "username": "devAdmin",
       "enabled": true,
       "totp": false,
       "emailVerified": true,
@@ -539,7 +539,7 @@
         {
           "id": "4f36bd1a-354e-477b-9fd8-4fa61758650e",
           "type": "password",
-          "value": "osiris"
+          "value": "supersegura"
         }
       ],
       "disableableCredentialTypes": [],
