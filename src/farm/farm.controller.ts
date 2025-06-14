@@ -21,7 +21,7 @@ import { Roles } from 'nest-keycloak-connect';
 
 @Roles({ roles: ['admin', 'panel'] })
 @Controller('farm')
-export default class StoreController {
+export default class FarmController {
   constructor(
     private readonly createService: CreateFarmService,
     private readonly findService: FindFarmsService,

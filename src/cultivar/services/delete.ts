@@ -11,11 +11,9 @@ export default class DeleteCultivarService {
     const checkCultivarExist = await this.repository.findById(id);
 
     if (!checkCultivarExist) {
-      throw new AppError('ERRO: Nenhuma safra foi encontrada.', 404);
+      throw new AppError('ERRO: Nenhuma cultura foi encontrada.', 404);
     }
 
-    const store = await this.repository.delete(id);
-
-    return store;
+    return this.repository.delete(id);
   }
 }

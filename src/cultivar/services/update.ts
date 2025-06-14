@@ -12,11 +12,9 @@ export default class UpdateCultivarService {
     const cultivar = await this.repository.findById(cultivarData.id);
 
     if (!cultivar) {
-      throw new AppError('ERRO: Nenhuma loja foi encontrada.', 404);
+      throw new AppError('ERRO: Nenhuma cultura foi encontrada.', 404);
     }
 
-    const updatedCultivar = await this.repository.update(cultivarData);
-
-    return updatedCultivar;
+    return this.repository.update(cultivarData);
   }
 }
