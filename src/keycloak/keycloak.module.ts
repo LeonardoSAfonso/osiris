@@ -14,6 +14,7 @@ import { ISSUER_CLIENT } from './constants';
 import { KeycloakAuthService } from './keycloak-auth.service';
 import { KeycloakSettings } from './keycloak-settings';
 import { KeycloakUserService } from './keycloak-user.service';
+import { AuthControler } from './auth.controller';
 
 @Module({})
 export class KeycloakModule {
@@ -82,6 +83,7 @@ export class KeycloakModule {
         KeycloakUserService,
         KeycloakAuthService,
       ],
+      controllers: [AuthControler],
       exports: [KeycloakUserService, KeycloakAuthService, JwtModule],
     };
   }

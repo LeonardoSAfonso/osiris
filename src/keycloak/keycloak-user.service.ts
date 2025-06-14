@@ -1,9 +1,8 @@
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
-import { UserQuery } from '@keycloak/keycloak-admin-client/lib/resources/users';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserNotFoundError } from './errors/user-not-found.error';
-import { CreateUserDTO } from './dtos/createUser';
+import { UserDTO } from './domain/user.dto';
 
 @Injectable()
 export class KeycloakUserService {
@@ -12,11 +11,12 @@ export class KeycloakUserService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async create(user: CreateUserDTO): Promise<{ id: string }> {
+  async create(user: UserDTO): Promise<{ id: string }> {
     const kcUser = await this.admin.users
       .create({
-        username: user.name,
+        username: user.email,
         email: user.email,
+        firstName: user.name,
         enabled: true,
         credentials: [
           {
@@ -25,9 +25,6 @@ export class KeycloakUserService {
             value: user.password,
           },
         ],
-        attributes: {
-          dbId: user.dbId,
-        },
       })
       .catch((e) => {
         throw new Error(JSON.stringify(e));
@@ -36,17 +33,11 @@ export class KeycloakUserService {
     return kcUser;
   }
 
-  async removeByEmail(email: string): Promise<void> {
-    const user = await this.findFirst({ email });
-
-    await this.remove(user.id);
-  }
-
   async changePassword(
-    email: string,
+    id: string,
     newPassword: string,
   ): Promise<{ id: string }> {
-    const user = await this.findFirst({ email });
+    const user = await this.findById(id);
 
     await this.admin.users.resetPassword({
       id: user.id,
@@ -60,30 +51,45 @@ export class KeycloakUserService {
     return { id: user.id };
   }
 
-  async activeUserEmail(token: string): Promise<string> {
-    const { email } = await this.jwtService.verifyAsync(token);
-
-    const user = await this.findFirst({ email });
+  async activeUserEmail(token: string): Promise<boolean> {
+    const { id } = await this.jwtService.verifyAsync(token);
 
     await this.admin.users.update(
-      { id: user.id },
+      { id },
       {
         emailVerified: true,
       },
     );
 
-    return user.email;
+    return true;
+  }
+
+  async update(user: Partial<UserDTO>): Promise<boolean> {
+    const checkUserExists = await this.findById(user.id);
+
+    if (!checkUserExists) {
+      return false;
+    }
+
+    await this.admin.users.update(
+      { id: user.id },
+      {
+        ...user,
+      },
+    );
+
+    return true;
   }
 
   remove(id: string): Promise<void> {
     return this.admin.users.del({ id });
   }
 
-  private async findFirst(query: UserQuery) {
-    const [user] = await this.admin.users.find({ ...query, exact: true });
+  private async findById(id: string) {
+    const user = await this.admin.users.findOne({ id });
 
     if (!user.id) {
-      throw new UserNotFoundError(JSON.stringify(query));
+      throw new UserNotFoundError(id);
     }
 
     return user;

@@ -1,7 +1,7 @@
 import { Farm } from 'prisma/client';
+import FarmRepository from '../repository';
 import { PaginationParams } from 'src/shared/types/pagination.type';
 import getTotalPage from 'src/shared/utils/totalPage';
-import FarmRepository from '../repository';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -11,12 +11,12 @@ export default class FindFarmsService {
   public async execute(
     params: PaginationParams<Farm>,
   ): Promise<[Farm[], number]> {
-    const stores = await this.repository.find(params);
+    const { farms, elements } = await this.repository.find(params);
 
-    if (!stores[0]?.length) {
+    if (!farms?.length) {
       return [[], 0];
     }
 
-    return [stores[0], getTotalPage(stores[1], params.limit)];
+    return [farms, getTotalPage(elements, params.limit)];
   }
 }

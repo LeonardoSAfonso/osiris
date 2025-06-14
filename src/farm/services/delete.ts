@@ -14,8 +14,6 @@ export default class DeleteFarmService {
       throw new AppError('ERRO: Nenhuma fazenda foi encontrada.', 404);
     }
 
-    const store = await this.repository.delete(id);
-
-    return store;
+    return this.repository.delete(id);
   }
 }

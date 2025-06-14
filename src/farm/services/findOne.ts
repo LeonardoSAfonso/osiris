@@ -5,15 +5,15 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export default class FindOneFarmService {
-  constructor(private storeRepository: FarmRepository) {}
+  constructor(private repository: FarmRepository) {}
 
   public async execute(id: string): Promise<Farm> {
-    const store = await this.storeRepository.findById(id);
+    const farm = await this.repository.findById(id);
 
-    if (!store) {
-      throw new AppError('ERRO: Nenhuma loja foi encontrada.', 404);
+    if (!farm) {
+      throw new AppError('ERRO: Nenhuma fazenda foi encontrada.', 404);
     }
 
-    return store;
+    return farm;
   }
 }

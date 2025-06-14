@@ -4,7 +4,7 @@ import { BaseClient } from 'openid-client';
 import { ISSUER_CLIENT } from './constants';
 import jwt_decode from 'jwt-decode';
 import { JwtService } from '@nestjs/jwt';
-import { Token } from './dtos/token.output';
+import { Token } from './domain/token.dto';
 
 @Injectable()
 export class KeycloakAuthService {
@@ -40,7 +40,6 @@ export class KeycloakAuthService {
       tokenType: tokenSet.token_type,
       sessionState: tokenSet.session_state,
       scope: tokenSet.scope,
-      sub: tokenSet.claims().dbId as string,
     };
   }
 
@@ -55,7 +54,6 @@ export class KeycloakAuthService {
       tokenType: tokenSet.token_type,
       sessionState: tokenSet.session_state,
       scope: tokenSet.scope,
-      sub: tokenSet.claims().dbId as string,
     };
   }
 
@@ -72,9 +70,9 @@ export class KeycloakAuthService {
     await this.admin.users.logout({ id });
   }
 
-  async resetPasswordToken(email: string): Promise<string> {
+  async resetPasswordToken(id: string): Promise<string> {
     return this.jwtService.sign({
-      email: email,
+      id,
       expireIn: new Date(),
     });
   }

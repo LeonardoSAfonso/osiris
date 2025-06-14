@@ -1,94 +1,47 @@
-import { Injectable } from '@nestjs/common';
-import { Token } from './dtos/token.output';
+import { Controller, Post, Body } from '@nestjs/common';
+import { ChangePasswordDTO } from './domain/changePassword.dto';
+import { LoginDTO } from './domain/login.dto';
+import { LogoutDTO } from './domain/logout.dto';
+import { RefreshTokenDTO } from './domain/refreshToken.dto';
+import { ResetPasswordDTO } from './domain/resetPassword.dto';
+import { Token } from './domain/token.dto';
 import { KeycloakAuthService } from './keycloak-auth.service';
 import { KeycloakUserService } from './keycloak-user.service';
-import { CreateUserDTO } from './dtos/createUser';
+import { Public } from 'nest-keycloak-connect';
 
-@Injectable()
-export class AuthService {
+@Public()
+@Controller('account')
+export class AuthControler {
   constructor(
     private readonly keycloakUserService: KeycloakUserService,
     private readonly keycloakAuthService: KeycloakAuthService,
-    //private readonly mailSchedule: EmailScheduleQueue,
   ) {}
 
-  login(username: string, password: string): Promise<Token> {
+  @Post('login')
+  login(@Body() { username, password }: LoginDTO): Promise<Token> {
     return this.keycloakAuthService.login(username, password);
   }
 
-  async loginLongLivedToken(
-    username: string,
-    password: string,
-  ): Promise<Token> {
-    return this.keycloakAuthService.loginLongLivedToken(username, password);
-  }
-
-  refreshToken(token: string): Promise<Token> {
+  @Post('refresh-token')
+  refreshToken(@Body() { token }: RefreshTokenDTO): Promise<Token> {
     return this.keycloakAuthService.refreshToken(token);
   }
 
-  async signUp(user: CreateUserDTO): Promise<void> {
-    await this.keycloakAuthService.checkIfAdminTokenStillValid();
-    await this.keycloakUserService.create(user);
-    //await this.sendActiveMail(user);
-
-    return;
-  }
-
-  async logout(id: string) {
+  @Post('logout')
+  async logout(@Body() { id }: LogoutDTO) {
     await this.keycloakAuthService.logout(id);
   }
 
-  async changePassword(email: string, newPassword: string) {
+  @Post('change-password')
+  async changePassword(@Body() { email, newPassword }: ChangePasswordDTO) {
     await this.keycloakAuthService.checkIfAdminTokenStillValid();
-
     return await this.keycloakUserService.changePassword(email, newPassword);
   }
 
-  async resetPassword(token: string, newPassword: string) {
+  @Post('reset-password')
+  async resetPassword(@Body() { token, newPassword }: ResetPasswordDTO) {
     const email = await this.keycloakUserService.verifyToken(token);
-
     await this.keycloakAuthService.checkIfAdminTokenStillValid();
-
     return await this.keycloakUserService.changePassword(email, newPassword);
-  }
-
-  // async sendResetPassword(email: string) {
-  //   const token = await this.keycloakAuthService.resetPasswordToken(email);
-
-  //   return this.mailSchedule.sendMail({
-  //     template: RESET_PASSWORD_TEMPLATE,
-  //     sendTo: [email],
-  //     subject: 'Recuperação de senha',
-  //     body: {
-  //       passwordToken: token,
-  //       name: user.name,
-  //     },
-  //   });
-  // }
-
-  // async activeEmail(token: string) {
-  //   const email = await this.keycloakUserService.activeUserEmail(token);
-  //   await this.userService.activeMail(email);
-  // }
-
-  // async sendActiveMail(user: CreateUserDTO) {
-  //   const token = await this.keycloakAuthService.resetPasswordToken(user.email);
-
-  //   return this.mailSchedule.sendMail({
-  //     template: CONFIRM_MAIL_TEMPLATE,
-  //     user: user.dbId,
-  //     sendTo: [user.email],
-  //     subject: 'Confirme seu email',
-  //     body: {
-  //       confirmToken: token,
-  //       name: user.name,
-  //     },
-  //   });
-  // }
-
-  async removeAccount(userEmail: string) {
-    this.keycloakAuthService.checkIfAdminTokenStillValid();
-    this.keycloakUserService.removeByEmail(userEmail);
   }
 }

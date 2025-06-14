@@ -6,5 +6,5 @@ export interface Token {
   tokenType: string;
   sessionState: string;
   scope: string;
-  sub: string;
+  sub?: string;
 }

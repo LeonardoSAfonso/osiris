@@ -3,7 +3,7 @@
 
 generator client {
   provider      = "prisma-client-js"
-  binaryTargets = "linux-musl-openssl-3.0.x"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
   output        = "./client"
 }
 
@@ -12,25 +12,52 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Farm {
+model Farmer {
   id             String   @id @default(uuid())
   name           String
-  email          String   @unique
   identification String   @unique
-  coordenates    String?
+  email          String   @unique
+  first_access   Boolean  @default(true)
+  email_checked  Boolean  @default(false)
+  keycloakId     String   @unique
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
-  User           User[]
+  Farms          Farm[]
 }
 
-model User {
-  id            String   @id @default(uuid())
-  name          String
-  email         String   @unique
-  first_access  Boolean  @default(true)
-  email_checked Boolean  @default(false)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  farmId        String?
-  Farm          Farm?    @relation(fields: [farmId], references: [id])
+model Farm {
+  id           String    @id @default(uuid())
+  name         String
+  coordenates  String?
+  totalArea    Float
+  farmableArea Float
+  greenArea    Float
+  state        String
+  city         String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  farmerId     String
+  Farmer       Farmer    @relation(fields: [farmerId], references: [id])
+  Harvests     Harvest[]
+}
+
+model Harvest {
+  id         String     @id @default(uuid())
+  year       String
+  note       String
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  farmId     String
+  Farm       Farm       @relation(fields: [farmId], references: [id])
+  Cultivares Cultivar[]
+}
+
+model Cultivar {
+  id             String   @id @default(uuid())
+  name           String
+  cultivatedArea String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  harvestId      String
+  Harvest        Harvest? @relation(fields: [harvestId], references: [id])
 }

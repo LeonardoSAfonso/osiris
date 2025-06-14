@@ -9,14 +9,17 @@ import {
   Query,
 } from '@nestjs/common';
 import CreateFarmService from './services/create';
-import { CreateDTO, UpdateDTO } from 'src/shared/types/model.type';
 import { Farm } from 'prisma/client';
 import { PaginationParams } from 'src/shared/types/pagination.type';
 import FindFarmsService from './services/find';
 import FindOneFarmService from './services/findOne';
 import UpdateFarmService from './services/update';
 import DeleteFarmService from './services/delete';
+import { CreateFarmDTO } from './domain/create.dto';
+import { UpdateFarmDTO } from './domain/update.dto';
+import { Roles } from 'nest-keycloak-connect';
 
+@Roles({ roles: ['admin', 'panel'] })
 @Controller('farm')
 export default class StoreController {
   constructor(
@@ -28,7 +31,7 @@ export default class StoreController {
   ) {}
 
   @Post()
-  async create(@Body() farm: CreateDTO<Farm>) {
+  async create(@Body() farm: CreateFarmDTO) {
     return this.createService.execute(farm);
   }
 
@@ -43,7 +46,7 @@ export default class StoreController {
   }
 
   @Put()
-  async update(@Body() farm: UpdateDTO<Farm>) {
+  async update(@Body() farm: UpdateFarmDTO) {
     return this.updateService.execute(farm);
   }
 
