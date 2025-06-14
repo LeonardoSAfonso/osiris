@@ -25,6 +25,7 @@ export class KeycloakUserService {
             value: user.password,
           },
         ],
+        realmRoles: ['panel'],
       })
       .catch((e) => {
         throw new Error(JSON.stringify(e));
